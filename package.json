@@ -1,0 +1,28 @@
+{
+  "name": "publishjs-uglify",
+  "version": "0.0.1-dev",
+  "description": "Integrate UglifyJS2 with PublishJS",
+  "keywords": [
+    "uglify",
+    "grunt",
+    "gulp",
+    "publishjs"
+  ],
+  "license": "MIT",
+  "email": "william.wong@candrholdings.com",
+  "main": "src/index.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/candrholdings/publishjs-uglify.git"
+  },
+  "scripts": {
+    "test": "vows src/test/*-test.js --spec"
+  },
+  "dependencies": {
+    "publishjs": "file:..\\core",
+    "uglify-js": "^2.4.23"
+  },
+  "devDependencies": {
+    "vows": "^0.8.1"
+  }
+}
