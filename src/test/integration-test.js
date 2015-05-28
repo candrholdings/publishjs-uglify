@@ -11,11 +11,11 @@
                     cache: false,
                     log: false,
                     processors: {
-                        cssmin: require('../index')
+                        uglify: require('../index')
                     }
                 }).build(function (pipe, callback) {
                     pipe.from(path.resolve(path.dirname(module.filename), 'integration-test-files'))
-                        .cssmin()
+                        .uglify()
                         .run(callback);
                 }, callback);
             },
