@@ -19,6 +19,7 @@
     "test": "vows src/test/*-test.js --spec"
   },
   "dependencies": {
+    "node.extend": "^1.1.4",
     "publishjs": "file:..\\core",
     "uglify-js": "^2.4.23"
   },

@@ -17,7 +17,7 @@
                             }
                         }).build(function (pipe, callback) {
                             pipe.from(path.resolve(path.dirname(module.filename), 'integration-test-files/input'))
-                                .uglify()
+                                .uglify({ map: true })
                                 .run(callback);
                         }, callback);
                     },

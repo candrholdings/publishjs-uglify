@@ -1,11 +1,16 @@
-!function (UglifyJS, path, util) {
+!function (UglifyJS, path, util, extend) {
     'use strict';
 
     var number = util.number,
         replaceMultiple = util.regexp.replaceMultiple,
         time = util.time;
 
-    module.exports = function (inputs, outputs, callback) {
+    module.exports = function (inputs, outputs, args, callback) {
+        if (arguments.length === 3) {
+            callback = arguments[2];
+            args = null;
+        }
+
         var that = this;
 
         inputs = inputs.newOrChanged;
@@ -18,12 +23,21 @@
             if ((path.extname(filename) || '').toLowerCase() === '.html') {
                 minified = outputs[filename] = new Buffer(processHTML(original.toString()));
             } else {
-                var uglified = UglifyJS.minify(original.toString(), { fromString: true });
+                var sourceMap;
+
+                if (args.map) {
+                    sourceMap = UglifyJS.SourceMap(extend({}, args.map, { file: filename }));
+                    args = extend(true, {}, args, { output: { source_map: sourceMap } });
+
+                    delete args.map;
+                }
+
+                var uglified = UglifyJS.minify(original.toString(), extend({ fromString: true }, args));
 
                 minified = outputs[filename] = uglified.code;
 
-                if (uglified.map) {
-                    outputs[filename + '.map'] = uglified.map;
+                if (sourceMap) {
+                    outputs[filename + '.map'] = sourceMap.toString();
                 }
             }
 
@@ -75,5 +89,6 @@
 }(
     require('uglify-js'),
     require('path'),
-    require('publishjs').util
+    require('publishjs').util,
+    require('node.extend')
 );
