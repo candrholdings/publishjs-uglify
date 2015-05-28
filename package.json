@@ -23,6 +23,8 @@
     "uglify-js": "^2.4.23"
   },
   "devDependencies": {
+    "async": "^1.0.0",
+    "async-linq": "^1.0.2",
     "vows": "^0.8.1"
   }
 }
