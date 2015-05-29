@@ -11,6 +11,8 @@
             args = null;
         }
 
+        args || (args = {});
+
         var that = this;
 
         inputs = inputs.newOrChanged;
