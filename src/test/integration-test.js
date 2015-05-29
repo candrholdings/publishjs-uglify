@@ -2,7 +2,7 @@
     'use strict';
 
     require('vows').describe('Integration test').addBatch({
-        'When minifying a CSS file': {
+        'When uglifying a JS file': {
             topic: function () {
                 var callback = this.callback,
                     topic;
@@ -33,7 +33,7 @@
                 }, callback);
             },
 
-            'should returns a minified copy': function (topic) {
+            'should returns an uglified copy': function (topic) {
                 var input = linq(topic.input.all).select(function (buffer) {
                         return buffer.toString().replace(/\r/g, '');
                     }).run(),
