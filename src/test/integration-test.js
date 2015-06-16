@@ -14,21 +14,23 @@
                             log: false,
                             processors: {
                                 uglify: require('../index')
-                            }
-                        }).build(function (pipe, callback) {
-                            pipe.from(path.resolve(path.dirname(module.filename), 'integration-test-files/input'))
-                                .uglify({ map: true })
-                                .run(callback);
-                        }, callback);
+                            },
+                            pipes: [function (pipe, callback) {
+                                pipe.from(path.resolve(path.dirname(module.filename), 'integration-test-files/input'))
+                                    .uglify({ map: true })
+                                    .run(callback);
+                            }]
+                        }).build(callback);
                     },
                     baseline: function (callback) {
                         require('publishjs')({
                             cache: false,
-                            log: false
-                        }).build(function (pipe, callback) {
-                            pipe.from(path.resolve(path.dirname(module.filename), 'integration-test-files/baseline'))
-                                .run(callback);
-                        }, callback);
+                            log: false,
+                            pipes: [function (pipe, callback) {
+                                pipe.from(path.resolve(path.dirname(module.filename), 'integration-test-files/baseline'))
+                                    .run(callback);
+                            }]
+                        }).build(callback);
                     }
                 }, callback);
             },
