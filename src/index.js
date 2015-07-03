@@ -24,11 +24,12 @@
         Object.getOwnPropertyNames(inputs).forEach(function (filename) {
             var startTime = Date.now(),
                 original = inputs[filename],
+                extname = (path.extname(filename) || '').toLowerCase(),
                 minified;
 
-            if ((path.extname(filename) || '').toLowerCase() === '.html') {
+            if (extname === '.html' || extname === '.htm') {
                 minified = outputs[filename] = new Buffer(processHTML(original.toString()));
-            } else {
+            } else if (extname === '.js') {
                 var sourceMap;
 
                 if (args.map) {
@@ -45,6 +46,10 @@
                 if (sourceMap) {
                     outputs[filename + '.map'] = sourceMap.toString();
                 }
+            } else {
+                outputs[filename] = original;
+
+                return;
             }
 
             that.log([
@@ -64,14 +69,6 @@
 
         callback(null, outputs);
     };
-
-    function processFile(filename, buffer) {
-        if ((path.extname(filename) || '').toLowerCase() === '.html') {
-            return processHTML(buffer);
-        } else  {
-            return processJavaScript(buffer);
-        }
-    }
 
     function processHTML(text) {
         var pattern = /(<script [^>]*?type="text\/javascript"[^>]*>)([\s\S]*?)(<\/script>)/gmi;
