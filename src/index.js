@@ -85,10 +85,6 @@
             ]
         );
     }
-
-    function processJavaScript(code) {
-        return UglifyJS.minify(code, { fromString: true });
-    }
 }(
     require('uglify-js'),
     require('path'),
