@@ -25,6 +25,7 @@
             var startTime = Date.now(),
                 original = inputs[filename],
                 extname = (path.extname(filename) || '').toLowerCase(),
+                perFileArgs = extend(true, {}, args),
                 minified;
 
             if (extname === '.html' || extname === '.htm') {
@@ -32,14 +33,14 @@
             } else if (extname === '.js') {
                 var sourceMap;
 
-                if (args.map) {
-                    sourceMap = UglifyJS.SourceMap(extend({}, args.map, { file: filename }));
-                    args = extend(true, {}, args, { output: { source_map: sourceMap } });
+                if (perFileArgs.map) {
+                    sourceMap = UglifyJS.SourceMap(extend({}, perFileArgs.map, { file: filename }));
+                    perFileArgs = extend(true, {}, perFileArgs, { output: { source_map: sourceMap } });
 
-                    delete args.map;
+                    delete perFileArgs.map;
                 }
 
-                var uglified = UglifyJS.minify(original.toString(), extend({ fromString: true }, args));
+                var uglified = UglifyJS.minify(removeDebugCode(original.toString()), extend({ fromString: true }, perFileArgs));
 
                 minified = outputs[filename] = uglified.code;
 
@@ -79,11 +80,37 @@
                 [
                     /(<script [^>]*?type="text\/javascript"[^>]*>)([\s\S]*?)(<\/script>)/gmi,
                     function (match0, match1, match2, match3, index, input) {
-                        return match1 + UglifyJS.minify(match2, { fromString: true }).code + match3;
+                        return match1 + UglifyJS.minify(removeDebugCode(match2), { fromString: true }).code + match3;
                     }
                 ]
             ]
         );
+    }
+
+    function removeDebugCode(code) {
+        var output = [],
+            count = 0,
+            startPattern = /\/\/\s*IF\s+DEBUG(\s|$)/,
+            endPattern = /\/\/\s*END\s+DEBUG(\s|$)/;
+
+        code.split('\n').forEach(function (line) {
+            if (count) {
+                if (endPattern.test(line)) {
+                    count--;
+                }
+            } else {
+                var startMatch = startPattern.exec(line);
+
+                if (startMatch) {
+                    output.push(line.substr(0, startMatch.index));
+                    count++;
+                } else {
+                    output.push(line + '\n');
+                }
+            }
+        });
+
+        return output.join('');
     }
 }(
     require('uglify-js'),
