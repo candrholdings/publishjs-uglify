@@ -29,9 +29,15 @@
                 minified;
 
             if (extname === '.html' || extname === '.htm') {
-                minified = outputs[filename] = new Buffer(processHTML(original.toString()));
+                try {
+                    minified = outputs[filename] = new Buffer(processHTML(original.toString()));
+                } catch (ex) {
+                    that.log('Failed to uglify ' + filename + ' due to ' + ex.message);
+                    throw ex;
+                }
             } else if (extname === '.js') {
-                var sourceMap;
+                var sourceMap,
+                    uglified;
 
                 if (perFileArgs.map) {
                     sourceMap = UglifyJS.SourceMap(extend({}, perFileArgs.map, { file: filename }));
@@ -40,7 +46,12 @@
                     delete perFileArgs.map;
                 }
 
-                var uglified = UglifyJS.minify(removeDebugCode(original.toString()), extend({ fromString: true }, perFileArgs));
+                try {
+                    uglified = UglifyJS.minify(removeDebugCode(original.toString()), extend({ fromString: true }, perFileArgs));
+                } catch (ex) {
+                    that.log('Failed to uglify ' + filename + ' due to ' + ex.message);
+                    throw ex;
+                }
 
                 minified = outputs[filename] = uglified.code;
 
@@ -94,8 +105,8 @@
             endPattern = /\/\/\s*END(\s+DEBUG)?(\s|$)/;
 
         code.split('\n').forEach(function (line) {
-            var startMatch = startPattern.test(line),
-                endMatch = endPattern.test(line);
+            var startMatch = startPattern.exec(line),
+                endMatch = endPattern.exec(line);
 
             if (startMatch && endMatch) {
                 if (startMatch.index < endMatch.index) {
@@ -106,12 +117,12 @@
             }
 
             if (startMatch) {
-                output.push(line.substr(0, startMatch.index));
+                !count && output.push(line.substr(0, startMatch.index));
                 count++;
             } else if (endMatch) {
                 count--;
             } else {
-                output.push(line + '\n');
+                !count && output.push(line + '\n');
             }
         });
 
