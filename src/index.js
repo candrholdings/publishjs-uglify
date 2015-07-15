@@ -91,22 +91,27 @@
         var output = [],
             count = 0,
             startPattern = /\/\/\s*IF\s+DEBUG(\s|$)/,
-            endPattern = /\/\/\s*END\s+DEBUG(\s|$)/;
+            endPattern = /\/\/\s*END(\s+DEBUG)?(\s|$)/;
 
         code.split('\n').forEach(function (line) {
-            if (count) {
-                if (endPattern.test(line)) {
-                    count--;
-                }
-            } else {
-                var startMatch = startPattern.exec(line);
+            var startMatch = startPattern.test(line),
+                endMatch = endPattern.test(line);
 
-                if (startMatch) {
-                    output.push(line.substr(0, startMatch.index));
-                    count++;
+            if (startMatch && endMatch) {
+                if (startMatch.index < endMatch.index) {
+                    endMatch = 0;
                 } else {
-                    output.push(line + '\n');
+                    startMatch = 0;
                 }
+            }
+
+            if (startMatch) {
+                output.push(line.substr(0, startMatch.index));
+                count++;
+            } else if (endMatch) {
+                count--;
+            } else {
+                output.push(line + '\n');
             }
         });
 
