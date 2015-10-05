@@ -20,7 +20,7 @@
   },
   "dependencies": {
     "node.extend": "^1.1.4",
-    "publishjs": "git:git@github.com:candrholdings/publishjs.git",
+    "publishjs": "*",
     "uglify-js": "^2.4.23"
   },
   "devDependencies": {
