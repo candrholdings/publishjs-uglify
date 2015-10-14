@@ -95,7 +95,7 @@
                     }
                 ]
             ]
-        );
+        ).replace(/\s*([^\n]*)[\n\r]*/gm, '$1\n').replace(/\n*$/, '');
     }
 
     function removeDebugCode(code) {
