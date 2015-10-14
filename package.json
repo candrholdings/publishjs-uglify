@@ -1,6 +1,6 @@
 {
   "name": "publishjs-uglify",
-  "version": "0.0.2-dev",
+  "version": "0.0.3",
   "description": "Integrate UglifyJS2 with PublishJS",
   "keywords": [
     "uglify",
