@@ -2,9 +2,8 @@
   'use strict';
 
   const
-    SOURCE_MAP_SUFFIX = '.map';
-
-  var number = util.number,
+    SOURCE_MAP_SUFFIX = '.map',
+    number = util.number,
     replaceMultiple = util.regexp.replaceMultiple,
     time = util.time;
 
@@ -78,9 +77,11 @@
         minified = outputs[filename] = uglified.code + `//# sourceMappingURL=${filename + SOURCE_MAP_SUFFIX}`;
 
         // Pretty print the source map
-        outputs[filename + SOURCE_MAP_SUFFIX] = JSON.stringify(JSON.parse(sourceMap.toString()), null, 2);
+        if (args.sourceMap) {
+          outputs[filename + SOURCE_MAP_SUFFIX] = JSON.stringify(JSON.parse(sourceMap.toString()), null, 2);
+        }
       } else {
-        if (!/\.map$/.test(filename)) {
+        if (isSourceMap(filename)) {
           outputs[filename] = original;
         }
 
@@ -150,6 +151,10 @@
     });
 
     return output.join('');
+  }
+
+  function isSourceMap(fileName) {
+    return fileName.toLowerCase().substr(-SOURCE_MAP_SUFFIX.length) === SOURCE_MAP_SUFFIX;
   }
 }(
   require('uglify-js'),
