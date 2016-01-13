@@ -74,12 +74,15 @@
           throw ex;
         }
 
-        minified = outputs[filename] = uglified.code + `//# sourceMappingURL=${filename + SOURCE_MAP_SUFFIX}`;
+        minified = uglified.code;
 
         // Pretty print the source map
         if (args.sourceMap) {
+          minified += `//# sourceMappingURL=${filename + SOURCE_MAP_SUFFIX}`;
           outputs[filename + SOURCE_MAP_SUFFIX] = JSON.stringify(JSON.parse(sourceMap.toString()), null, 2);
         }
+
+        outputs[filename] = minified;
       } else {
         if (isSourceMap(filename)) {
           outputs[filename] = original;
